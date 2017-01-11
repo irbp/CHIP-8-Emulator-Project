@@ -85,11 +85,51 @@ void chip8::emulateCycle() {
 }
 
 //Loading the game rom into de memory
-void chip8::loadRom(const char * filename) {
+bool chip8::loadRom(const char * filename) {
     init();
 
     FILE * pFile;
-    pFile
 
+    //Open file
+    pFile = fopen(filename, "rb");
+
+    //Verifying error
+    if (pFile == NULL) {
+        printf ("File error!\n");
+        return false;
+    }
+
+    //Check file size
+    fseek(pFile, 0, SEEK_END);
+    long fSize = ftell(pFile);
+    rewind(pFile);
+    printf ("Filesize: %d\n", (int)fSize);
+
+    //Allocate memory (buffer)
+    char * buffer  = (char*)malloc(sizeof(char) * fSize);
+    if (buffer == NULL) {
+        printf ("Memory allocation error!\n");
+        return false;
+    }
+
+    //Copy the file into the buffer
+    size_t result = fread (buffer, 1, fSize, pFile);
+    if (result != fSize) {
+        printf ("Reading error!\n");
+        return false;
+    }
+
+    //Copy buffer into CHIP-8 memory
+    if ((4096 - 512) > fSize) {
+        for (int i = 0; i < fSize; i++) {
+            memory[i + 512] = buffer[i];
+        }
+    }
+    else {
+        printf ("Error: The selected ROM is too big for CHIP-8 memory!\n");
+    }
+
+    fclose(pFile);
+    free(buffer);
 
 }
