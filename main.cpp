@@ -1,8 +1,15 @@
 #include <stdio.h>
 #include "chip8Core.h"
 
-private chip8 myChip8;
+chip8Core myChip8;
 
 int main() {
-    myChip8.init();
+    if (myChip8.loadRom("TETRIS")) {
+        printf ("ok\n");
+    }
+    else {
+        printf ("deu ruim\n");
+    }
+
+    return 0;
 }

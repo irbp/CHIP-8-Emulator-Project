@@ -1,12 +1,13 @@
-class chip8 {
+class chip8Core {
   public:
-    chip8();
-    ~chip8();
+    chip8Core();
+    ~chip8Core();
 
     bool drawFlag;
 
     void emulateCycle();
     bool loadRom(const char * filename);
+    void printa();
 
     //graphic memory (64 x 32 pixels - 2048 pixels)
     unsigned char gfx[64*32];

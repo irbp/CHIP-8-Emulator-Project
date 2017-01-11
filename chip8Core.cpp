@@ -27,16 +27,22 @@ unsigned char chip8_fontSet[80] =
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-chip8::chip8() {
+chip8Core::chip8Core() {
 
 }
 
-chip8::~chip8() {
+chip8Core::~chip8Core() {
 
+}
+
+void chip8Core::printa() {
+    printf ("Hello, World");
+
+    return;
 }
 
 //Initialize the system
-void chip8::init() {
+void chip8Core::init() {
     pc = 0x200; //Start program counter address
     opcode = 0; //Reset opcode
     I = 0; //Reset index register
@@ -76,7 +82,7 @@ void chip8::init() {
     srand(time(NULL));
 }
 
-void chip8::emulateCycle() {
+void chip8Core::emulateCycle() {
     //Fetch opcode
     opcode  = memory[pc] << 8 | memory[pc + 1];
 
@@ -250,6 +256,7 @@ void chip8::emulateCycle() {
         break;
 
         case 0xD000: //(0xDXYN - Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels)
+        {
             unsigned short x = V[(opcode & 0x0F00) >> 8];
             unsigned short y = V[(opcode & 0x00F0) >> 4];
             unsigned short N = opcode & 0x000F;
@@ -271,6 +278,7 @@ void chip8::emulateCycle() {
 
             drawFlag = true;
             pc += 2;
+        }
         break;
 
         case 0xE000:
@@ -308,6 +316,7 @@ void chip8::emulateCycle() {
                 break;
 
                 case 0x000A: //(0xFX0A - A key press is awaited, and then stored in VX)
+                {
                     bool pressed = false;
 
                     for (int i = 0; i < 16; i++) {
@@ -323,6 +332,7 @@ void chip8::emulateCycle() {
                     }
 
                     pc += 2;
+                }
                 break;
 
                 case 0x0015: //(0xFX15 - Sets the delay timer to VX)
@@ -392,8 +402,8 @@ void chip8::emulateCycle() {
     }
 }
 
-//Loading the game rom into de memory
-bool chip8::loadRom(const char * filename) {
+//Loading the game rom into the memory
+bool chip8Core::loadRom(const char * filename) {
     init();
 
     FILE * pFile;
