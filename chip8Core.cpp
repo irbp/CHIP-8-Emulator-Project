@@ -78,8 +78,82 @@ void chip8::init() {
 
 void chip8::emulateCycle() {
     //Fetch opcode
+    opcode  = memory[pc] << 8 | memory[pc + 1];
 
     //Decode opcode
+    //All opcodes are from the oficial specs of the CHIP-8
+    switch (opcode & 0xF000)
+    {
+        case 0x0000:
+            switch (opcode & 0x000F)
+            {
+                case 0x0000: //(0x00E0 - Clears the screen)
+                    for (int i = 0; i < 2048; i++) {
+                        gfx[i] = 0x0;
+                    }
+                    drawFlag = true;
+                    pc += 2;
+                break;
+
+                case 0x000E: //(0x00EE - Returns from a subroutine)
+                    --sp;
+                    pc = stack[sp];
+                    pc += 2;
+                break;
+
+                default:
+                    printf ("Opcode error!\n");
+            }
+        break;
+
+        case 0x1000: //(0x1NNN - Jumps to address NNN)
+            pc = opcode & 0x0FFF;
+        break;
+
+        case 0x2000: //(0x2NNN - Calls subroutine at NNN)
+            stack[sp] = pc;
+            ++sp;
+            pc = opcode & 0x0FFF;
+        break;
+
+        case 0x3000: //(0x3XNN - Skips the next instruction if VX equals NN)
+            if (V[(opcode & 0x0F00) >> 8] == (opcode & 0x00FF)) {
+                pc += 4;
+            }
+            else {
+                pc += 2;
+            }
+        break;
+
+        case 0x4000: //(0x4XNN - Skips the next instruction if VX doesn't equal NN)
+            if (V[(opcode & 0x0F00) >> 8] != (opcode & 0x00FF)) {
+                pc += 4;
+            }
+            else {
+                pc += 2;
+            }
+        break;
+
+        case 0x5000: //(0x5XY0 - Skips the next instruction if VX equals VY)
+            if (V[(opcode & 0x0F00) >> 8] == V[opcode & 0x00F0 >> 4]) {
+                pc += 4;
+            }
+            else {
+                pc += 2;
+            }
+        break;
+
+        case 0x6000: //(0x6XNN - Sets VX to NN)
+            V[(opcode & 0x0F00) >> 8] = (opcode & 0x00FF);
+            pc += 2;
+        break;
+
+        case 0x7000: //(0x7XNN - Adds NN to NX)
+            V[(opcode & 0x0F00) >> 8] += (opcode & 0x00FF);
+            pc += 2;
+        break;
+
+    }
 
     //Execute opcode
 }
