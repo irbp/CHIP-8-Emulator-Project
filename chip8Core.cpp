@@ -75,3 +75,21 @@ void chip8::init() {
 
     srand(time(NULL));
 }
+
+void chip8::emulateCycle() {
+    //Fetch opcode
+
+    //Decode opcode
+
+    //Execute opcode
+}
+
+//Loading the game rom into de memory
+void chip8::loadRom(const char * filename) {
+    init();
+
+    FILE * pFile;
+    pFile
+
+
+}
