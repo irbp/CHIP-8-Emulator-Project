@@ -1,30 +1,44 @@
-//35 opcodes, which are all two bytes long
-unsigned short opcode;
+class chip8 {
+  public:
+    chip8();
+    ~chip8();
 
-//8-CHIP system has 4Kb memory in total (4096 bytes)
-unsigned char memory[4096];
+    bool drawFlag;
 
-//16 8-bit data registers
-unsigned char V[16];
+    void emulateCycle();
+    bool loadRom(const char * filename);
 
-//16-bit register (for memory access)
-unsigned short I;
+    //graphic memory (64 x 32 pixels - 2048 pixels)
+    unsigned char gfx[64*32];
 
-//program counter
-unsigned short pc;
+    //8-CHIP keypad
+    unsigned char keys[16];
 
-//graphic memory (64 x 32 pixels - 2048 pixels)
-unsigned char gfx[64*32];
+  private:
+    //35 opcodes, which are all two bytes long
+    unsigned short opcode;
 
-//two timer registers (60 Hz)
-unsigned char delay_timer;
-unsigned char sound_timer;
+    //8-CHIP system has 4Kb memory in total (4096 bytes)
+    unsigned char memory[4096];
 
-//stack of 16 levels (return to the caller routine)
-unsigned char stack[16];
+    //16 8-bit data registers
+    unsigned char V[16];
 
-//stack pointer
-unsigned char sp;
+    //16-bit register (for memory access)
+    unsigned short I;
 
-//8-CHIP keypad
-unsigned char keys[16];
+    //program counter
+    unsigned short pc;
+
+    //two timer registers (60 Hz)
+    unsigned char delay_timer;
+    unsigned char sound_timer;
+
+    //stack of 16 levels (return to the caller routine)
+    unsigned char stack[16];
+
+    //stack pointer
+    unsigned char sp;
+
+    void init();
+};
