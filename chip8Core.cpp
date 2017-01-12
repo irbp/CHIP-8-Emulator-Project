@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string>
+
+using namespace std;
+
 
 unsigned char chip8_fontSet[80] =
 {
@@ -451,4 +455,5 @@ bool chip8Core::loadRom(const char * filename) {
     fclose(pFile);
     free(buffer);
 
+    return true;
 }

@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+=======
+#include <string>
+
+using namespace std;
+
+>>>>>>> 9af05fd0750b98f74a618904f42ee9619ff1ba2c
 class chip8Core {
   public:
     chip8Core();

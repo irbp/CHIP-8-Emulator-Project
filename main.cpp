@@ -4,7 +4,7 @@
 chip8Core myChip8;
 
 int main() {
-    if (myChip8.loadRom("TETRIS")) {
+    if (myChip8.loadRom("TETRIS.c8")) {
         printf ("ok\n");
     }
     else {
