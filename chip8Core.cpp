@@ -10,6 +10,7 @@
 
 using namespace std;
 
+
 unsigned char chip8_fontSet[80] =
 {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
