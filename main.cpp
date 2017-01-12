@@ -11,5 +11,7 @@ int main() {
         printf ("deu ruim\n");
     }
 
+    myChip8.emulateCycle();
+
     return 0;
 }

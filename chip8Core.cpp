@@ -35,6 +35,7 @@ chip8Core::~chip8Core() {
 
 }
 
+//Debug stuff
 void chip8Core::printa() {
     printf ("Hello, World");
 
@@ -60,7 +61,7 @@ void chip8Core::init() {
 
     //Clear the memory
     for (int i = 0; i < 4096; i++) {
-        stack[i] = 0;
+        memory[i] = 0;
     }
 
     //Clear the registers
