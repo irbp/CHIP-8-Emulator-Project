@@ -1,3 +1,7 @@
+#include <string>
+
+using namespace std;
+
 class chip8Core {
   public:
     chip8Core();

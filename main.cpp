@@ -1,15 +1,11 @@
-#include <stdio.h>
-#include "chip8Core.h"
+#include "mainwindow.h"
+#include <QApplication>
 
-chip8Core myChip8;
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
 
-int main() {
-    if (myChip8.loadRom("TETRIS")) {
-        printf ("ok\n");
-    }
-    else {
-        printf ("deu ruim\n");
-    }
-
-    return 0;
+    return a.exec();
 }

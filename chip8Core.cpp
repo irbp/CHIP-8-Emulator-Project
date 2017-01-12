@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string>
+
+using namespace std;
 
 unsigned char chip8_fontSet[80] =
 {
@@ -35,6 +38,7 @@ chip8Core::~chip8Core() {
 
 }
 
+//Debug stuff
 void chip8Core::printa() {
     printf ("Hello, World");
 
@@ -60,7 +64,7 @@ void chip8Core::init() {
 
     //Clear the memory
     for (int i = 0; i < 4096; i++) {
-        stack[i] = 0;
+        memory[i] = 0;
     }
 
     //Clear the registers
@@ -450,4 +454,5 @@ bool chip8Core::loadRom(const char * filename) {
     fclose(pFile);
     free(buffer);
 
+    return true;
 }
