@@ -29,6 +29,7 @@ void setupVideo() {
     allegro_init();
     install_timer();
     install_keyboard();
+    install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL);
     set_color_depth(32);
     set_gfx_mode(GFX_AUTODETECT_WINDOWED, 64*ASPECT_RATIO, 32*ASPECT_RATIO, 0, 0);
     set_window_title("PONG");
@@ -122,6 +123,8 @@ void resetKeys() {
 }
 
 int main(int argc, char **argv) {
+    SAMPLE *beep = load_sample("beep.wav");
+    
     setupVideo(); //setup the video emulator
 
     chip8.loadRom("PONG2.ch8"); //load the rom into the memory of CHIP-8
@@ -133,6 +136,10 @@ int main(int argc, char **argv) {
             chip8.drawFlag = false;
         }
 
+        if (chip8.beep) {
+            play_sample(beep, 255, 128, 1000, FALSE);
+            chip8.beep = false;
+        }
         resetKeys();
         verifyKey();
     }

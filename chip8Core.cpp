@@ -95,9 +95,7 @@ void chip8Core::init() {
 
 void chip8Core::emulateCycle() {
     //Fetch opcode
-    if (opcode != 0xF020) {
-        printf ("Opcode: 0x%X\nPC: 0x%X\nSP: %d\n", opcode, pc, sp);
-    }
+    printf ("Opcode: 0x%X\nPC: 0x%X\nSP: %d\n", opcode, pc, sp);
     opcode  = (memory[pc] << 8) | memory[pc + 1];
 
     //Decode opcode
@@ -416,6 +414,7 @@ void chip8Core::emulateCycle() {
     if (sound_timer > 0) {
         if (sound_timer == 1) {
             beep = true;
+            printf ("BEEP\n");
         }
         --sound_timer;
     }
