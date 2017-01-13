@@ -1,16 +1,15 @@
-<<<<<<< HEAD
-=======
 #include <string>
 
 using namespace std;
 
->>>>>>> 9af05fd0750b98f74a618904f42ee9619ff1ba2c
+
 class chip8Core {
   public:
     chip8Core();
     ~chip8Core();
 
     bool drawFlag;
+    bool beep;
 
     void emulateCycle();
     bool loadRom(const char * filename);
@@ -43,7 +42,7 @@ class chip8Core {
     unsigned char sound_timer;
 
     //stack of 16 levels (return to the caller routine)
-    unsigned char stack[16];
+    unsigned short stack[16];
 
     //stack pointer
     unsigned char sp;

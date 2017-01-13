@@ -78,10 +78,16 @@ void chip8Core::init() {
         memory[i] = chip8_fontSet[i];
     }
 
+    //Clear the keypad
+    for (int i = 0; i < 16; i++) {
+        keys[i] = 0;
+    }
+
     //Reset timers counters
     delay_timer = 0;
     sound_timer = 0;
 
+    beep = false;
     drawFlag = true;
 
     srand(time(NULL));
@@ -89,16 +95,19 @@ void chip8Core::init() {
 
 void chip8Core::emulateCycle() {
     //Fetch opcode
-    opcode  = memory[pc] << 8 | memory[pc + 1];
+    if (opcode != 0xF020) {
+        printf ("Opcode: 0x%X\nPC: 0x%X\nSP: %d\n", opcode, pc, sp);
+    }
+    opcode  = (memory[pc] << 8) | memory[pc + 1];
 
     //Decode opcode
     //All opcodes are from the oficial specs of the CHIP-8
     switch (opcode & 0xF000)
     {
         case 0x0000:
-            switch (opcode & 0x000F)
+            switch (opcode & 0x00FF)
             {
-                case 0x0000: //(0x00E0 - Clears the screen)
+                case 0x00E0: //(0x00E0 - Clears the screen)
                     for (int i = 0; i < 2048; i++) {
                         gfx[i] = 0x0;
                     }
@@ -106,14 +115,14 @@ void chip8Core::emulateCycle() {
                     pc += 2;
                 break;
 
-                case 0x000E: //(0x00EE - Returns from a subroutine)
-                    --sp;
+                case 0x00EE: //(0x00EE - Returns from a subroutine)
+                    sp--;
                     pc = stack[sp];
                     pc += 2;
                 break;
 
-                default:
-                    printf ("Opcode error!\n");
+                /*default:
+                    printf ("Opcode error! 0x%X\n", opcode);*/
             }
         break;
 
@@ -123,7 +132,7 @@ void chip8Core::emulateCycle() {
 
         case 0x2000: //(0x2NNN - Calls subroutine at NNN)
             stack[sp] = pc;
-            ++sp;
+            sp++;
             pc = opcode & 0x0FFF;
         break;
 
@@ -146,7 +155,7 @@ void chip8Core::emulateCycle() {
         break;
 
         case 0x5000: //(0x5XY0 - Skips the next instruction if VX equals VY)
-            if (V[(opcode & 0x0F00) >> 8] == V[opcode & 0x00F0 >> 4]) {
+            if (V[(opcode & 0x0F00) >> 8] == V[(opcode & 0x00F0) >> 4]) {
                 pc += 4;
             }
             else {
@@ -188,24 +197,24 @@ void chip8Core::emulateCycle() {
                 break;
 
                 case 0x0004: //(0x8XY4 - Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't)
-                    V[(opcode & 0x0F00) >> 8] += V[(opcode & 0x00F0) >> 4];
                     if (V[(opcode & 0x00F0) >> 4] > (0xFF - V[(opcode & 0x0F00) >> 8])) {
                         V[0xF] = 1;
                     }
                     else {
                         V[0xF] = 0;
                     }
+                    V[(opcode & 0x0F00) >> 8] += V[(opcode & 0x00F0) >> 4];
                     pc += 2;
                 break;
                 
                 case 0x0005: //(0x8XY5 - VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't)
-                    V[(opcode & 0x0F00) >> 8] -= V[(opcode & 0x00F0) >> 4];
                     if (V[(opcode & 0x00F0) >> 4] > V[(opcode & 0x0F00) >> 8]) {
                         V[0xF] = 0;
                     }
                     else {
                         V[0xF] = 1;
                     }
+                    V[(opcode & 0x0F00) >> 8] -= V[(opcode & 0x00F0) >> 4];
                     pc += 2;
                 break;
 
@@ -216,13 +225,13 @@ void chip8Core::emulateCycle() {
                 break;
 
                 case 0x0007: //(0x8XY7 - Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't)
-                    V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4] - V[(opcode & 0x0F00) >> 8];
                     if (V[(opcode & 0x00F0) >> 4] < V[(opcode & 0x0F00) >> 8]) {
                         V[0xF] = 0;
                     }
                     else {
                         V[0xF] = 1;
                     }
+                    V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4] - V[(opcode & 0x0F00) >> 8];
                     pc += 2;
                 break;
 
@@ -232,8 +241,8 @@ void chip8Core::emulateCycle() {
                     pc += 2;
                 break;
 
-                default:
-                    printf ("Opcode error!\n");
+                /*default:
+                    printf ("Opcode error! 0x%X\n", opcode);*/
             }
         break;
 
@@ -287,9 +296,9 @@ void chip8Core::emulateCycle() {
         break;
 
         case 0xE000:
-            switch (opcode & 0x000F)
+            switch (opcode & 0x00FF)
             {
-                case 0x000E: //(0xEX9E - Skips the next instruction if the key stored in VX is pressed)
+                case 0x009E: //(0xEX9E - Skips the next instruction if the key stored in VX is pressed)
                     if (keys[V[(opcode & 0x0F00) >> 8]] != 0) {
                         pc += 4;
                     }
@@ -298,7 +307,7 @@ void chip8Core::emulateCycle() {
                     }
                 break;
 
-                case 0x0001: //(0xEXA1 - Skips the next instruction if the key stored in VX isn't pressed)
+                case 0x00A1: //(0xEXA1 - Skips the next instruction if the key stored in VX isn't pressed)
                     if (keys[V[(opcode & 0x0F00) >> 8]] == 0) {
                         pc += 4;
                     }
@@ -307,8 +316,8 @@ void chip8Core::emulateCycle() {
                     }
                 break;
 
-                default:
-                    printf ("Opcode error!\n");                
+                /*default:
+                    printf ("Opcode error! 0x%X\n", opcode);*/
             }
         break;
 
@@ -324,11 +333,10 @@ void chip8Core::emulateCycle() {
                 {
                     bool pressed = false;
 
-                    for (int i = 0; i < 16; i++) {
+                    for (int i = 0; i < 16; ++i) {
                         if (keys[i] != 0) {
                             V[(opcode & 0x0F00) >> 8] = i;
                             pressed = true;
-                            i = 16;
                         }
                     }
 
@@ -351,6 +359,12 @@ void chip8Core::emulateCycle() {
                 break;
 
                 case 0x001E: //(0xFX1E - Adds VX to I)
+                    if (I + V[(opcode & 0x0F00) >> 8] > 0xFFF) {
+                        V[0xF] = 1;
+                    }
+                    else {
+                        V[0xF] = 0;
+                    }
                     I += V[(opcode & 0x0F00) >> 8];
                     pc += 2;
                 break;
@@ -385,13 +399,13 @@ void chip8Core::emulateCycle() {
                     pc += 2;
                 break;
 
-                default:
-                    printf ("Opcode error!\n");
+                /*default:
+                    printf ("Opcode error! 0x%X\n", opcode);*/
             }
         break;
 
-        default:
-            printf ("Opcode error!\n");
+        /*default:
+            printf ("Opcode error! 0x%X\n", opcode);*/
     }
 
     //Timer update
@@ -401,7 +415,7 @@ void chip8Core::emulateCycle() {
 
     if (sound_timer > 0) {
         if (sound_timer == 1) {
-            
+            beep = true;
         }
         --sound_timer;
     }

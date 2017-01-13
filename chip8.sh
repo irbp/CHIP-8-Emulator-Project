@@ -1,0 +1,1 @@
+g++ main.cpp chip8Core.cpp -o main `allegro-config --libs`
