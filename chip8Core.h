@@ -12,7 +12,7 @@ class chip8Core {
     bool beep;
 
     void emulateCycle();
-    bool loadRom(const char * filename);
+    bool loadRom(char * filename);
     void printa();
 
     //graphic memory (64 x 32 pixels - 2048 pixels)

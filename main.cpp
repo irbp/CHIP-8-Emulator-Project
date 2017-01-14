@@ -25,14 +25,14 @@ END_OF_FUNCTION(timeIncrement);
 
 int mark;
 
-void setupVideo() {
+void setupVideo(char * game) {
     allegro_init();
     install_timer();
     install_keyboard();
     install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL);
     set_color_depth(32);
     set_gfx_mode(GFX_AUTODETECT_WINDOWED, 64*ASPECT_RATIO, 32*ASPECT_RATIO, 0, 0);
-    set_window_title("PONG");
+    set_window_title(game);
 
     LOCK_VARIABLE(exit_program);
     LOCK_FUNCTION(exitEmulator);
@@ -125,9 +125,13 @@ void resetKeys() {
 int main(int argc, char **argv) {
     SAMPLE *beep = load_sample("beep.wav");
     
-    setupVideo(); //setup the video emulator
+    setupVideo(argv[1]); //setup the video emulator
 
-    chip8.loadRom("PONG2.ch8"); //load the rom into the memory of CHIP-8
+    //load the rom into the memory of CHIP-8
+    if (!chip8.loadRom(argv[1])) {
+        printf ("Error: Couldn't find %s!\n", argv[1]);
+        return -1;
+    }
 
     while(!exit_program) {
         chip8.emulateCycle(); //execute one cycle of the emulation

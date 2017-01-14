@@ -6,7 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <string>
+//#include <string>
+#include <string.h>
 
 using namespace std;
 
@@ -421,7 +422,7 @@ void chip8Core::emulateCycle() {
 }
 
 //Loading the game rom into the memory
-bool chip8Core::loadRom(const char * filename) {
+bool chip8Core::loadRom(char * filename) {
     init();
 
     FILE * pFile;
